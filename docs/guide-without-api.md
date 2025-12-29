@@ -246,7 +246,9 @@ app.listen(3001, () => {
 });
 
 function generateRandomUserId() {
-  return Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64url');
+  // Use Node.js crypto module
+  const crypto = require('crypto');
+  return crypto.randomBytes(32).toString('base64url');
 }
 ```
 

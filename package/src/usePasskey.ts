@@ -41,8 +41,15 @@ export function usePasskey(config?: PasskeyClientConfig): UsePasskeyReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Memoize config to prevent unnecessary re-renders
+  const apiUrl = config?.apiUrl;
+  const customFetch = config?.customFetch;
+
   // Create passkey client instance
-  const client = useMemo(() => new PasskeyClient(config), [config]);
+  const client = useMemo(
+    () => new PasskeyClient({ apiUrl, customFetch }),
+    [apiUrl, customFetch]
+  );
 
   // Check if passkeys are supported
   const isSupported = useMemo(() => client.isSupported(), [client]);

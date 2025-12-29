@@ -18,7 +18,7 @@ import {
  * Passkey Client for handling registration and authentication
  */
 export class PasskeyClient {
-  private config: PasskeyClientConfig;
+  private config: Required<PasskeyClientConfig>;
 
   constructor(config: PasskeyClientConfig = {}) {
     this.config = {
@@ -51,7 +51,7 @@ export class PasskeyClient {
 
     try {
       // Get registration options from server
-      const optionsResponse = await this.config.customFetch!(
+      const optionsResponse = await this.config.customFetch(
         `${this.config.apiUrl}/register/options`,
         {
           method: 'POST',
@@ -74,7 +74,7 @@ export class PasskeyClient {
       const credential = await startRegistration(options);
 
       // Verify registration with server
-      const verifyResponse = await this.config.customFetch!(
+      const verifyResponse = await this.config.customFetch(
         `${this.config.apiUrl}/register/verify`,
         {
           method: 'POST',
@@ -117,7 +117,7 @@ export class PasskeyClient {
 
     try {
       // Get authentication options from server
-      const optionsResponse = await this.config.customFetch!(
+      const optionsResponse = await this.config.customFetch(
         `${this.config.apiUrl}/authenticate/options`,
         {
           method: 'POST',
@@ -136,7 +136,7 @@ export class PasskeyClient {
       const credential = await startAuthentication(options);
 
       // Verify authentication with server
-      const verifyResponse = await this.config.customFetch!(
+      const verifyResponse = await this.config.customFetch(
         `${this.config.apiUrl}/authenticate/verify`,
         {
           method: 'POST',

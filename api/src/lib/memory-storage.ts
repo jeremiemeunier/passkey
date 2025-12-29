@@ -1,7 +1,15 @@
 /**
  * In-memory storage implementation
- * WARNING: This is for development/demo purposes only!
- * Use a proper database in production.
+ * 
+ * ⚠️ WARNING: FOR DEVELOPMENT/TESTING ONLY ⚠️
+ * 
+ * This storage implementation:
+ * - Stores all data in memory (lost on server restart)
+ * - Does not persist across multiple instances
+ * - Is NOT suitable for production use
+ * - Should ONLY be used for local development and testing
+ * 
+ * For production, implement the PasskeyStorage interface with a proper database.
  */
 
 import type {
@@ -15,6 +23,15 @@ export class MemoryStorage implements PasskeyStorage {
   private users: Map<string, UserPasskey> = new Map();
   private credentialIndex: Map<string, string> = new Map(); // credentialId -> username
   private challenges: Map<string, Challenge> = new Map(); // username -> challenge
+
+  constructor() {
+    if (process.env.NODE_ENV === 'production') {
+      console.warn(
+        '⚠️ WARNING: MemoryStorage is being used in production! ' +
+        'This is NOT recommended. Please implement a proper database storage solution.'
+      );
+    }
+  }
 
   async saveUser(user: UserPasskey): Promise<void> {
     this.users.set(user.username, user);
