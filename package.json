@@ -1,0 +1,24 @@
+{
+  "name": "passkey-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Complete passkey authentication system with package, API, and documentation",
+  "workspaces": [
+    "package",
+    "api"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:api": "npm run dev --workspace=api",
+    "dev:package": "npm run dev --workspace=package",
+    "clean": "rm -rf node_modules package/node_modules api/node_modules package/dist api/.next"
+  },
+  "keywords": [
+    "passkey",
+    "webauthn",
+    "authentication",
+    "passwordless"
+  ],
+  "author": "Jeremie Meunier",
+  "license": "MIT"
+}
