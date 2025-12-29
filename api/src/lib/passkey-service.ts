@@ -230,6 +230,8 @@ export class PasskeyService {
 
   /**
    * Generate a random user ID
+   * @returns A base64url-encoded random string (32 bytes) suitable for use as a unique user identifier
+   * @private
    */
   private generateUserId(): string {
     // Use Node.js crypto module for random bytes

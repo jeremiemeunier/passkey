@@ -26,10 +26,12 @@ export class MemoryStorage implements PasskeyStorage {
 
   constructor() {
     if (process.env.NODE_ENV === 'production') {
-      console.warn(
-        '⚠️ WARNING: MemoryStorage is being used in production! ' +
-        'This is NOT recommended. Please implement a proper database storage solution.'
-      );
+      const errorMsg = 
+        '❌ CRITICAL ERROR: MemoryStorage is being used in production! ' +
+        'This will cause data loss and security vulnerabilities. ' +
+        'You must implement the PasskeyStorage interface with a proper database.';
+      console.error(errorMsg);
+      throw new Error(errorMsg);
     }
   }
 

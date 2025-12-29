@@ -41,7 +41,7 @@ export function usePasskey(config?: PasskeyClientConfig): UsePasskeyReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Memoize config to prevent unnecessary re-renders
+  // Extract config properties to use as dependencies
   const apiUrl = config?.apiUrl;
   const customFetch = config?.customFetch;
 
