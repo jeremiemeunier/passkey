@@ -8,6 +8,7 @@ import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } from '@simplewebauthn/server';
+import { randomBytes } from 'crypto';
 import type { PasskeyStorage, PasskeyCredential } from './storage';
 import { memoryStorage } from './memory-storage';
 
@@ -231,16 +232,7 @@ export class PasskeyService {
    * Generate a random user ID
    */
   private generateUserId(): string {
-    // Use Node.js crypto module for better compatibility
-    const randomBytes = new Uint8Array(32);
-    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-      // Browser or modern Node.js with crypto global
-      crypto.getRandomValues(randomBytes);
-    } else {
-      // Fallback for older Node.js versions
-      const nodeCrypto = require('crypto');
-      nodeCrypto.randomFillSync(randomBytes);
-    }
-    return Buffer.from(randomBytes).toString('base64url');
+    // Use Node.js crypto module for random bytes
+    return randomBytes(32).toString('base64url');
   }
 }

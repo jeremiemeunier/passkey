@@ -55,6 +55,7 @@ Create your server:
 ```javascript
 // server.js
 import express from 'express';
+import { randomBytes } from 'crypto';
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
@@ -78,7 +79,7 @@ const challenges = new Map();
 app.post('/api/passkey/register/options', async (req, res) => {
   const { username, displayName, userId } = req.body;
   
-  const userIdToUse = userId || generateRandomUserId();
+  const userIdToUse = userId || randomBytes(32).toString('base64url');
   
   const options = await generateRegistrationOptions({
     rpName: RP_NAME,
@@ -244,12 +245,6 @@ app.post('/api/passkey/authenticate/verify', async (req, res) => {
 app.listen(3001, () => {
   console.log('Server running on http://localhost:3001');
 });
-
-function generateRandomUserId() {
-  // Use Node.js crypto module
-  const crypto = require('crypto');
-  return crypto.randomBytes(32).toString('base64url');
-}
 ```
 
 ### Python/FastAPI Example

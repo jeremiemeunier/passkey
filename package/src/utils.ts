@@ -45,7 +45,7 @@ export function stringToArrayBuffer(str: string): ArrayBuffer {
  * Check if WebAuthn is supported in the browser
  */
 export function isWebAuthnSupported(): boolean {
-  return !!(window?.PublicKeyCredential);
+  return typeof window !== 'undefined' && !!(window?.PublicKeyCredential);
 }
 
 /**
