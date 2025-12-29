@@ -8,14 +8,6 @@ import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } from '@simplewebauthn/server';
-import type {
-  GenerateRegistrationOptionsOpts,
-  GenerateAuthenticationOptionsOpts,
-  VerifyRegistrationResponseOpts,
-  VerifyAuthenticationResponseOpts,
-  RegistrationResponseJSON,
-  AuthenticationResponseJSON,
-} from '@simplewebauthn/server';
 import type { PasskeyStorage, PasskeyCredential } from './storage';
 import { memoryStorage } from './memory-storage';
 
@@ -52,7 +44,7 @@ export class PasskeyService {
     // Check if user exists
     const existingUser = await this.storage.getUserByUsername(username);
     const excludeCredentials = existingUser?.credentials.map((cred) => ({
-      id: cred.id,
+      id: Buffer.from(cred.id, 'base64url'),
       type: 'public-key' as const,
       transports: cred.transports as AuthenticatorTransport[] | undefined,
     })) || [];
@@ -88,7 +80,7 @@ export class PasskeyService {
    */
   async verifyRegistration(
     username: string,
-    response: RegistrationResponseJSON
+    response: any
   ) {
     const challenge = await this.storage.getAndDeleteChallenge(username);
     if (!challenge) {
@@ -170,7 +162,7 @@ export class PasskeyService {
    */
   async verifyAuthentication(
     username: string | undefined,
-    response: AuthenticationResponseJSON
+    response: any
   ) {
     const challenge = await this.storage.getAndDeleteChallenge(username || '');
     if (!challenge) {
