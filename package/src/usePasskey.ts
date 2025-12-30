@@ -1,32 +1,36 @@
-import { useState, useCallback, useMemo } from 'react';
-import { PasskeyClient } from './client';
-import type { PasskeyClientConfig, PasskeyResult, UsePasskeyReturn } from './types';
+import { useState, useCallback, useMemo } from "react";
+import { PasskeyClient } from "./client";
+import type {
+  PasskeyClientConfig,
+  PasskeyResult,
+  UsePasskeyReturn,
+} from "./types";
 
 /**
  * React hook for passkey authentication
- * 
+ *
  * @param config - Configuration for the passkey client
  * @returns Passkey state and methods
- * 
+ *
  * @example
  * ```tsx
  * function LoginPage() {
  *   const { register, authenticate, isLoading, error } = usePasskey();
- * 
+ *
  *   const handleRegister = async () => {
  *     const result = await register('user@example.com', 'User Name');
  *     if (result.success) {
  *       console.log('Registration successful');
  *     }
  *   };
- * 
+ *
  *   const handleLogin = async () => {
  *     const result = await authenticate('user@example.com');
  *     if (result.success) {
  *       console.log('Login successful');
  *     }
  *   };
- * 
+ *
  *   return (
  *     <div>
  *       <button onClick={handleRegister} disabled={isLoading}>Register</button>
@@ -43,13 +47,9 @@ export function usePasskey(config?: PasskeyClientConfig): UsePasskeyReturn {
 
   // Extract config properties to use as dependencies
   const apiUrl = config?.apiUrl;
-  const customFetch = config?.customFetch;
 
   // Create passkey client instance
-  const client = useMemo(
-    () => new PasskeyClient({ apiUrl, customFetch }),
-    [apiUrl, customFetch]
-  );
+  const client = useMemo(() => new PasskeyClient({ apiUrl }), [apiUrl]);
 
   // Check if passkeys are supported
   const isSupported = useMemo(() => client.isSupported(), [client]);
@@ -58,7 +58,11 @@ export function usePasskey(config?: PasskeyClientConfig): UsePasskeyReturn {
    * Register a new passkey
    */
   const register = useCallback(
-    async (username: string, displayName: string, userId?: string): Promise<PasskeyResult> => {
+    async (
+      username: string,
+      displayName: string,
+      userId?: string
+    ): Promise<PasskeyResult> => {
       setIsLoading(true);
       setError(null);
 

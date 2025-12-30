@@ -72,7 +72,6 @@ export interface AuthenticationResponse {
  */
 export interface PasskeyClientConfig {
   apiUrl?: string;
-  customFetch?: typeof fetch;
 }
 
 /**
@@ -97,7 +96,11 @@ export interface UsePasskeyState {
  * Return type for the usePasskey hook
  */
 export interface UsePasskeyReturn extends UsePasskeyState {
-  register: (username: string, displayName: string, userId?: string) => Promise<PasskeyResult>;
+  register: (
+    username: string,
+    displayName: string,
+    userId?: string
+  ) => Promise<PasskeyResult>;
   authenticate: (username?: string) => Promise<PasskeyResult>;
   clearError: () => void;
 }
