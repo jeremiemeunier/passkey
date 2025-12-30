@@ -201,9 +201,9 @@ This system is configured to work with modern **passkey** implementations and We
 - Use that passkey on other devices **within the same credential ecosystem** (e.g., Mac → iPhone via iCloud Keychain, Android phone → Chrome on another Android device or ChromeOS via Google Password Manager)
 - Sync passkeys across supported devices via iCloud Keychain, Google Password Manager, or other credential managers that participate in the same ecosystem
 
-Note that passkeys generally **do not sync between different ecosystems** (for example, a passkey created in iCloud Keychain on a Mac cannot automatically be used on an unrelated Android device that only uses Google Password Manager). For true cross‑platform use across ecosystems, users can instead use **cross‑platform authenticators** such as compatible hardware security keys.
+Note that passkeys generally **do not sync between different ecosystems** (for example, a passkey created in iCloud Keychain on a Mac cannot automatically be used on an unrelated Android device that only uses Google Password Manager). For true cross-platform use across ecosystems, users can instead use **cross-platform authenticators** such as compatible hardware security keys.
 
-The system uses `residentKey: "required"` to create **resident (discoverable) credentials**, which enables usernameless / account‑selection flows on supported authenticators. This setting controls how credentials are stored and discovered on the authenticator; it does **not** itself provide cross‑ecosystem syncing.
+The system uses `residentKey: "required"` to create **resident (discoverable) credentials**, which enables usernameless / account-selection flows on supported authenticators. This setting controls how credentials are stored and discovered on the authenticator; it does **not** itself provide cross-ecosystem syncing.
 
 ## 🔐 Security
 
