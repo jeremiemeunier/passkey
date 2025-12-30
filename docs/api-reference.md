@@ -67,7 +67,7 @@ Generate options for registering a new passkey.
   "timeout": 60000,
   "excludeCredentials": [],
   "authenticatorSelection": {
-    "residentKey": "preferred",
+    "residentKey": "required",
     "userVerification": "preferred"
   },
   "attestation": "none"
