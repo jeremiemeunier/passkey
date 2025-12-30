@@ -63,7 +63,9 @@ export class PasskeyClient {
       );
 
       if (!optionsResponse.ok) {
-        throw new Error('Failed to get registration options');
+        const errorData = await optionsResponse.json().catch(() => ({}));
+        const errorMessage = errorData.error || `Failed to get registration options: ${optionsResponse.status} ${optionsResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const options = await optionsResponse.json();
@@ -85,7 +87,9 @@ export class PasskeyClient {
       );
 
       if (!verifyResponse.ok) {
-        throw new Error('Failed to verify registration');
+        const errorData = await verifyResponse.json().catch(() => ({}));
+        const errorMessage = errorData.error || `Failed to verify registration: ${verifyResponse.status} ${verifyResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const result = await verifyResponse.json();
@@ -125,7 +129,9 @@ export class PasskeyClient {
       );
 
       if (!optionsResponse.ok) {
-        throw new Error('Failed to get authentication options');
+        const errorData = await optionsResponse.json().catch(() => ({}));
+        const errorMessage = errorData.error || `Failed to get authentication options: ${optionsResponse.status} ${optionsResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const options = await optionsResponse.json();
@@ -147,7 +153,9 @@ export class PasskeyClient {
       );
 
       if (!verifyResponse.ok) {
-        throw new Error('Failed to verify authentication');
+        const errorData = await verifyResponse.json().catch(() => ({}));
+        const errorMessage = errorData.error || `Failed to verify authentication: ${verifyResponse.status} ${verifyResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const result = await verifyResponse.json();
