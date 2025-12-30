@@ -59,7 +59,7 @@ export class PasskeyService {
       attestationType: 'none',
       excludeCredentials,
       authenticatorSelection: {
-        residentKey: 'preferred',
+        residentKey: 'required',
         userVerification: 'preferred',
       },
     });
