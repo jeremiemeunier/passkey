@@ -1,6 +1,6 @@
 {
-  "name": "@passkey/client",
-  "version": "1.0.0",
+  "name": "@jeremiemeunier/passkey",
+  "version": "0.1.2",
   "description": "Client-side passkey authentication package with React hook",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -18,7 +18,8 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pub": "tsup && npm publish"
   },
   "keywords": [
     "passkey",
@@ -27,6 +28,9 @@
     "react",
     "hook"
   ],
+  "publishConfig": {
+    "@jeremiemeunier:registry": "https://npm.pkg.github.com"
+  },
   "author": "Jeremie Meunier",
   "license": "MIT",
   "peerDependencies": {
@@ -39,6 +43,7 @@
     "typescript": "^5.3.0"
   },
   "dependencies": {
-    "@simplewebauthn/browser": "^9.0.0"
+    "@simplewebauthn/browser": "^9.0.0",
+    "axios": "^1.13.2"
   }
 }
