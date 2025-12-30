@@ -9,8 +9,6 @@ import type {
   PasskeyResult,
 } from './types';
 import {
-  arrayBufferToBase64Url,
-  base64UrlToArrayBuffer,
   isWebAuthnSupported,
 } from './utils';
 
