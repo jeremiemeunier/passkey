@@ -52,7 +52,11 @@ export class PasskeyClient {
       );
 
       if (optionsResponse.status !== 200) {
-        throw new Error("Failed to get registration options");
+        const errorData = optionsResponse.data || {};
+        const errorMessage =
+          errorData.error ||
+          `Failed to get registration options: ${optionsResponse.status} ${optionsResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const options = optionsResponse.data;
@@ -70,7 +74,11 @@ export class PasskeyClient {
       );
 
       if (verifyResponse.status !== 200) {
-        throw new Error("Failed to verify registration");
+        const errorData = verifyResponse.data || {};
+        const errorMessage =
+          errorData.error ||
+          `Failed to verify registration: ${verifyResponse.status} ${verifyResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const result = verifyResponse.data;
@@ -107,7 +115,11 @@ export class PasskeyClient {
       );
 
       if (optionsResponse.status !== 200) {
-        throw new Error("Failed to get authentication options");
+        const errorData = optionsResponse.data || {};
+        const errorMessage =
+          errorData.error ||
+          `Failed to get authentication options: ${optionsResponse.status} ${optionsResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const options = optionsResponse.data;
@@ -124,7 +136,11 @@ export class PasskeyClient {
       );
 
       if (verifyResponse.status !== 200) {
-        throw new Error("Failed to verify authentication");
+        const errorData = verifyResponse.data || {};
+        const errorMessage =
+          errorData.error ||
+          `Failed to verify authentication: ${verifyResponse.status} ${verifyResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const result = verifyResponse.data;
