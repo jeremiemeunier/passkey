@@ -1,6 +1,6 @@
 {
   "name": "@jeremiemeunier/passkey",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Client-side passkey authentication package with React hook",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
