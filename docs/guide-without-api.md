@@ -89,7 +89,7 @@ app.post('/api/passkey/register/options', async (req, res) => {
     userDisplayName: displayName,
     attestationType: 'none',
     authenticatorSelection: {
-      residentKey: 'preferred',
+      residentKey: 'required',
       userVerification: 'preferred',
     },
   });

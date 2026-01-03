@@ -60,7 +60,7 @@ export interface PasskeyStorage {
   saveChallenge(challenge: Challenge): Promise<void>;
 
   /**
-   * Get and delete a challenge (single-use)
+   * Get and delete a challenge by username (single-use)
    */
   getAndDeleteChallenge(username: string): Promise<Challenge | null>;
 

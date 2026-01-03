@@ -7,10 +7,10 @@ import {
   verifyRegistrationResponse,
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
-} from '@simplewebauthn/server';
-import { randomBytes } from 'crypto';
-import type { PasskeyStorage, PasskeyCredential } from './storage';
-import { memoryStorage } from './memory-storage';
+} from "@simplewebauthn/server";
+import { randomBytes } from "crypto";
+import type { PasskeyStorage, PasskeyCredential } from "./storage";
+import { memoryStorage } from "./memory-storage";
 
 export interface PasskeyServiceConfig {
   rpName: string;
@@ -25,7 +25,7 @@ export class PasskeyService {
 
   constructor(config: PasskeyServiceConfig) {
     this.config = {
-      rpName: config.rpName || 'Passkey Demo',
+      rpName: config.rpName || "Passkey Demo",
       rpID: config.rpID,
       origin: config.origin,
     };
@@ -44,11 +44,12 @@ export class PasskeyService {
 
     // Check if user exists
     const existingUser = await this.storage.getUserByUsername(username);
-    const excludeCredentials = existingUser?.credentials.map((cred) => ({
-      id: Buffer.from(cred.id, 'base64url'),
-      type: 'public-key' as const,
-      transports: cred.transports as AuthenticatorTransport[] | undefined,
-    })) || [];
+    const excludeCredentials =
+      existingUser?.credentials.map((cred) => ({
+        id: Buffer.from(cred.id, "base64url"),
+        type: "public-key" as const,
+        transports: cred.transports as AuthenticatorTransport[] | undefined,
+      })) || [];
 
     const options = await generateRegistrationOptions({
       rpName: this.config.rpName,
@@ -56,11 +57,11 @@ export class PasskeyService {
       userID: userIdToUse,
       userName: username,
       userDisplayName: displayName,
-      attestationType: 'none',
+      attestationType: "none",
       excludeCredentials,
       authenticatorSelection: {
-        residentKey: 'preferred',
-        userVerification: 'preferred',
+        residentKey: "required",
+        userVerification: "preferred",
       },
     });
 
@@ -79,13 +80,10 @@ export class PasskeyService {
   /**
    * Verify registration response
    */
-  async verifyRegistration(
-    username: string,
-    response: any
-  ) {
+  async verifyRegistration(username: string, response: any) {
     const challenge = await this.storage.getAndDeleteChallenge(username);
     if (!challenge) {
-      throw new Error('Challenge not found or expired');
+      throw new Error("Challenge not found or expired");
     }
 
     const verification = await verifyRegistrationResponse({
@@ -96,15 +94,16 @@ export class PasskeyService {
     });
 
     if (!verification.verified || !verification.registrationInfo) {
-      throw new Error('Registration verification failed');
+      throw new Error("Registration verification failed");
     }
 
-    const { credentialID, credentialPublicKey, counter } = verification.registrationInfo;
+    const { credentialID, credentialPublicKey, counter } =
+      verification.registrationInfo;
 
     // Create credential
     const credential: PasskeyCredential = {
-      id: Buffer.from(credentialID).toString('base64url'),
-      publicKey: Buffer.from(credentialPublicKey).toString('base64url'),
+      id: Buffer.from(credentialID).toString("base64url"),
+      publicKey: Buffer.from(credentialPublicKey).toString("base64url"),
       counter,
       transports: response.response.transports,
       createdAt: new Date(),
@@ -112,11 +111,13 @@ export class PasskeyService {
 
     // Save or update user
     const existingUser = await this.storage.getUserByUsername(username);
+    const userId = existingUser ? existingUser.userId : challenge.userId;
+
     if (existingUser) {
       await this.storage.addCredential(username, credential);
     } else {
       await this.storage.saveUser({
-        userId: challenge.userId,
+        userId: userId,
         username,
         displayName: username,
         credentials: [credential],
@@ -127,7 +128,7 @@ export class PasskeyService {
 
     return {
       verified: true,
-      userId: challenge.userId,
+      userId: userId,
       credentialId: credential.id,
     };
   }
@@ -143,14 +144,14 @@ export class PasskeyService {
     const options = await generateAuthenticationOptions({
       rpID: this.config.rpID,
       allowCredentials,
-      userVerification: 'preferred',
+      userVerification: "preferred",
     });
 
-    // Save challenge
+    // Save challenge associated with the (optional) username for later verification
     await this.storage.saveChallenge({
       challenge: options.challenge,
-      userId: '', // Will be determined during verification
-      username: username || '',
+      userId: "", // Will be determined during verification
+      username: username || "",
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
     });
@@ -161,25 +162,25 @@ export class PasskeyService {
   /**
    * Verify authentication response
    */
-  async verifyAuthentication(
-    username: string | undefined,
-    response: any
-  ) {
-    const challenge = await this.storage.getAndDeleteChallenge(username || '');
-    if (!challenge) {
-      throw new Error('Challenge not found or expired');
-    }
-
-    // Get user by credential ID
+  async verifyAuthentication(username: string | undefined, response: any) {
+    // Get user by credential ID first
     const user = await this.storage.getUserByCredentialId(response.id);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
+    }
+
+    // For usernameless flows, the challenge was saved with empty string
+    // For username flows, the challenge was saved with the provided username
+    const challengeKey = username !== undefined ? username : "";
+    const challenge = await this.storage.getAndDeleteChallenge(challengeKey);
+    if (!challenge) {
+      throw new Error("Challenge not found or expired");
     }
 
     // Find the credential
     const credential = user.credentials.find((c) => c.id === response.id);
     if (!credential) {
-      throw new Error('Credential not found');
+      throw new Error("Credential not found");
     }
 
     // Verify authentication
@@ -189,14 +190,14 @@ export class PasskeyService {
       expectedOrigin: this.config.origin,
       expectedRPID: this.config.rpID,
       authenticator: {
-        credentialID: Buffer.from(credential.id, 'base64url'),
-        credentialPublicKey: Buffer.from(credential.publicKey, 'base64url'),
+        credentialID: Buffer.from(credential.id, "base64url"),
+        credentialPublicKey: Buffer.from(credential.publicKey, "base64url"),
         counter: credential.counter,
       },
     });
 
     if (!verification.verified) {
-      throw new Error('Authentication verification failed');
+      throw new Error("Authentication verification failed");
     }
 
     // Update counter
@@ -222,8 +223,8 @@ export class PasskeyService {
     }
 
     return user.credentials.map((cred) => ({
-      id: Buffer.from(cred.id, 'base64url'),
-      type: 'public-key' as const,
+      id: Buffer.from(cred.id, "base64url"),
+      type: "public-key" as const,
       transports: cred.transports as AuthenticatorTransport[] | undefined,
     }));
   }
@@ -235,6 +236,6 @@ export class PasskeyService {
    */
   private generateUserId(): string {
     // Use Node.js crypto module for random bytes
-    return randomBytes(32).toString('base64url');
+    return randomBytes(32).toString("base64url");
   }
 }
