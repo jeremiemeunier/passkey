@@ -9,7 +9,7 @@ The system had an issue where user identifiers were not correctly retrieved duri
 ### 1. Memory Storage (`memory-storage.ts`)
 
 - Improved challenge storage to use consistent keys (username or empty string for usernameless flows)
-- Enhanced cleanup of expired challenges
+- Simplified cleanup of expired challenges to match the streamlined storage structure
 
 ### 2. Passkey Service (`passkey-service.ts`)
 
@@ -27,6 +27,14 @@ The system had an issue where user identifiers were not correctly retrieved duri
 ## Migration for Custom Implementations
 
 If you have implemented the `PasskeyStorage` interface with your own database, you need to ensure proper challenge storage:
+
+### Breaking Change: Remove getAndDeleteChallengeByValue
+
+The `getAndDeleteChallengeByValue` method has been removed from the `PasskeyStorage` interface as it was never used. If you previously implemented this method, you should:
+
+1. Remove the `getAndDeleteChallengeByValue` method from your storage implementation
+2. Remove any dual-indexing logic (e.g., indexing challenges by both username and challenge value)
+3. Simplify your challenge storage to only index by username
 
 ### Optimize challenge storage
 
