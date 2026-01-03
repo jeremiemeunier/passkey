@@ -194,14 +194,16 @@ Passkeys require WebAuthn support:
 | Firefox | 60+ |
 | Safari | 13+ |
 
-### Cross-Platform Passkeys
+### Passkeys and Cross-Device Usage
 
-This system is configured for **cross-platform passkey support**, allowing users to:
-- Create a passkey on one device (e.g., Mac with Touch ID)
-- Use that passkey on another device (e.g., Android phone)
-- Sync passkeys across devices via iCloud Keychain, Google Password Manager, or other credential managers
+This system is configured to work with modern **passkey** implementations and WebAuthn-compatible authenticators. In practice, this means users can:
+- Create a passkey on a device (e.g., Mac with Touch ID or an Android phone)
+- Use that passkey on other devices **within the same credential ecosystem** (e.g., Mac → iPhone via iCloud Keychain, Android phone → Chrome on another Android device or on ChromeOS via Google Password Manager)
+- Sync passkeys across supported devices via iCloud Keychain, Google Password Manager, or other credential managers that participate in the same ecosystem
 
-The system uses `residentKey: "required"` to ensure credentials are properly stored on the authenticator and can be synced across your devices.
+Note that passkeys generally **do not sync between different ecosystems** (for example, a passkey created in iCloud Keychain on a Mac cannot automatically be used on an unrelated Android device that only uses Google Password Manager). For true cross-platform use across ecosystems, users can instead use **cross-platform authenticators** such as compatible hardware security keys.
+
+The system uses `residentKey: "required"` to create **resident (discoverable) credentials**, which enables usernameless / account-selection flows on supported authenticators. This setting controls how credentials are stored and discovered on the authenticator; it does **not** itself provide cross-ecosystem syncing.
 
 ## 🔐 Security
 

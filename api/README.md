@@ -5,7 +5,7 @@ Serverless API for passkey authentication built with Next.js.
 ## Features
 
 - 🔐 Complete WebAuthn implementation
-- 🌍 Cross-platform passkey support (sync across devices)
+- 🌍 Resident passkey support for usernameless authentication (sync within credential manager ecosystems)
 - 🚀 Serverless-ready (Vercel, Netlify, AWS Lambda, etc.)
 - 🔌 Pluggable storage interface
 - 📝 TypeScript support
