@@ -23,7 +23,6 @@ export class MemoryStorage implements PasskeyStorage {
   private users: Map<string, UserPasskey> = new Map();
   private credentialIndex: Map<string, string> = new Map(); // credentialId -> username
   private challenges: Map<string, Challenge> = new Map(); // username -> challenge
-  private challengesByValue: Map<string, Challenge> = new Map(); // challenge -> Challenge
 
   constructor() {
     if (process.env.NODE_ENV === "production") {
@@ -96,26 +95,13 @@ export class MemoryStorage implements PasskeyStorage {
   }
 
   async saveChallenge(challenge: Challenge): Promise<void> {
-    this.challenges.set(challenge.username || challenge.challenge, challenge);
-    this.challengesByValue.set(challenge.challenge, challenge);
+    this.challenges.set(challenge.username, challenge);
   }
 
   async getAndDeleteChallenge(username: string): Promise<Challenge | null> {
     const challenge = this.challenges.get(username) || null;
     if (challenge) {
       this.challenges.delete(username);
-      this.challengesByValue.delete(challenge.challenge);
-    }
-    return challenge;
-  }
-
-  async getAndDeleteChallengeByValue(
-    challengeValue: string
-  ): Promise<Challenge | null> {
-    const challenge = this.challengesByValue.get(challengeValue) || null;
-    if (challenge) {
-      this.challengesByValue.delete(challengeValue);
-      this.challenges.delete(challenge.username || challengeValue);
     }
     return challenge;
   }
@@ -125,7 +111,6 @@ export class MemoryStorage implements PasskeyStorage {
     for (const [key, challenge] of this.challenges.entries()) {
       if (challenge.expiresAt < now) {
         this.challenges.delete(key);
-        this.challengesByValue.delete(challenge.challenge);
       }
     }
   }

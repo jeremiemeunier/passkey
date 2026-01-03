@@ -1,70 +1,46 @@
 # Migration Guide - Fix User ID Resolution
 
-## Problème Résolu
+## Problem Resolved
 
-Le système avait un problème où les identifiants utilisateurs n'étaient pas correctement récupérés lors de l'authentification. Cela causait des erreurs "User not found" ou des incohérences d'ID.
+The system had an issue where user identifiers were not correctly retrieved during authentication. This caused "User not found" errors or ID inconsistencies.
 
-## Changements Effectués
+## Changes Made
 
-### 1. Interface de Stockage (`storage.ts`)
+### 1. Memory Storage (`memory-storage.ts`)
 
-Ajout d'une nouvelle méthode pour récupérer les challenges par leur valeur :
+- Improved challenge storage to use consistent keys (username or empty string for usernameless flows)
+- Simplified cleanup of expired challenges to match the streamlined storage structure
 
-```typescript
-getAndDeleteChallengeByValue(challengeValue: string): Promise<Challenge | null>;
-```
+### 2. Passkey Service (`passkey-service.ts`)
 
-### 2. Stockage en Mémoire (`memory-storage.ts`)
+#### Registration
 
-- Ajout d'un double index pour les challenges (par username ET par valeur du challenge)
-- Implémentation de la nouvelle méthode `getAndDeleteChallengeByValue`
-- Amélioration du nettoyage des challenges expirés pour gérer les deux index
+- Ensured the challenge `userId` is used consistently
+- If the user already exists, their existing `userId` is reused
 
-### 3. Service Passkey (`passkey-service.ts`)
+#### Authentication
 
-#### Enregistrement
+- Retrieved user via `getUserByCredentialId` first
+- Fixed challenge retrieval for usernameless authentication flows
+- Challenge is now correctly retrieved using the same key it was saved with (empty string for usernameless, or the provided username)
 
-- Garantie que le `userId` du challenge est utilisé de manière cohérente
-- Si l'utilisateur existe déjà, on réutilise son `userId` existant
+## Migration for Custom Implementations
 
-#### Authentification
+If you have implemented the `PasskeyStorage` interface with your own database, you need to ensure proper challenge storage:
 
-- Récupération de l'utilisateur via `getUserByCredentialId` en premier
-- Utilisation du username réel de l'utilisateur trouvé pour récupérer le challenge
-- Support amélioré pour l'authentification découvrable (sans username)
+### Breaking Change: Remove getAndDeleteChallengeByValue
 
-## Migration pour les Implémentations Personnalisées
+The `getAndDeleteChallengeByValue` method has been removed from the `PasskeyStorage` interface as it was never used. If you previously implemented this method, you should:
 
-Si vous avez implémenté l'interface `PasskeyStorage` avec votre propre base de données, vous devez :
+1. Remove the `getAndDeleteChallengeByValue` method from your storage implementation
+2. Remove any dual-indexing logic (e.g., indexing challenges by both username and challenge value)
+3. Simplify your challenge storage to only index by username
 
-### 1. Ajouter la nouvelle méthode
+### Optimize challenge storage
 
-```typescript
-async getAndDeleteChallengeByValue(challengeValue: string): Promise<Challenge | null> {
-  // Récupérer le challenge par sa valeur
-  const challenge = await db.challenge.findUnique({
-    where: { challenge: challengeValue }
-  });
+Challenges should be stored and retrieved by username. For usernameless (discoverable) authentication, an empty string is used as the key.
 
-  if (challenge) {
-    // Supprimer le challenge (usage unique)
-    await db.challenge.delete({
-      where: { challenge: challengeValue }
-    });
-  }
-
-  return challenge;
-}
-```
-
-### 2. Optimiser le stockage des challenges
-
-Il est recommandé de pouvoir récupérer un challenge soit par :
-
-- Le username de l'utilisateur (pour les authentifications standard)
-- La valeur du challenge (pour les authentifications découvrables)
-
-**Exemple avec Prisma :**
+**Example with Prisma:**
 
 ```prisma
 model Challenge {
@@ -80,44 +56,44 @@ model Challenge {
 }
 ```
 
-### 3. Garantir la cohérence des userId
+### Ensure userId consistency
 
-Assurez-vous que :
+Make sure that:
 
-- Le `userId` généré lors de l'enregistrement est unique et persistant
-- Le même `userId` est toujours retourné pour le même utilisateur
-- L'index `credentialId -> userId` permet de retrouver rapidement l'utilisateur
+- The `userId` generated during registration is unique and persistent
+- The same `userId` is always returned for the same user
+- The `credentialId -> userId` index allows quick user retrieval
 
-## Tests Recommandés
+## Recommended Tests
 
-Après migration, testez les scénarios suivants :
+After migration, test the following scenarios:
 
-1. **Enregistrement d'un nouvel utilisateur**
+1. **Registering a new user**
 
-   - Vérifiez que le `userId` est généré et sauvegardé
-   - Vérifiez que le credential est correctement indexé
+   - Verify that the `userId` is generated and saved
+   - Verify that the credential is properly indexed
 
-2. **Authentification avec username**
+2. **Authentication with username**
 
-   - Vérifiez que le challenge est trouvé
-   - Vérifiez que l'utilisateur est correctement identifié
-   - Vérifiez que le `userId` retourné correspond à celui de l'enregistrement
+   - Verify that the challenge is found
+   - Verify that the user is correctly identified
+   - Verify that the returned `userId` matches the one from registration
 
-3. **Authentification découvrable (sans username)**
+3. **Discoverable authentication (without username)**
 
-   - Vérifiez que l'utilisateur est trouvé via le credentialId
-   - Vérifiez que le challenge est récupéré
-   - Vérifiez que le `userId` est cohérent
+   - Verify that the user is found via credentialId
+   - Verify that the challenge is retrieved correctly
+   - Verify that the `userId` is consistent
 
-4. **Ajout d'une seconde passkey**
-   - Vérifiez que l'utilisateur existant est mis à jour
-   - Vérifiez que le `userId` reste le même
-   - Vérifiez que les deux credentials sont indexés
+4. **Adding a second passkey**
+   - Verify that the existing user is updated
+   - Verify that the `userId` remains the same
+   - Verify that both credentials are indexed
 
 ## Support
 
-Si vous rencontrez des problèmes lors de la migration, vérifiez :
+If you encounter issues during migration, check that:
 
-- Que votre implémentation de `PasskeyStorage` inclut toutes les méthodes requises
-- Que les index de base de données sont correctement configurés
-- Que les challenges expirés sont régulièrement nettoyés
+- Your `PasskeyStorage` implementation includes all required methods
+- Database indexes are properly configured
+- Expired challenges are regularly cleaned up
