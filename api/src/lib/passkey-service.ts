@@ -147,7 +147,7 @@ export class PasskeyService {
       userVerification: "preferred",
     });
 
-    // Save challenge with a unique key using the challenge itself
+    // Save challenge associated with the (optional) username for later verification
     await this.storage.saveChallenge({
       challenge: options.challenge,
       userId: "", // Will be determined during verification
@@ -169,10 +169,10 @@ export class PasskeyService {
       throw new Error("User not found");
     }
 
-    // Use the actual username from the found user to get the challenge
-    const challenge = await this.storage.getAndDeleteChallenge(
-      username || user.username
-    );
+    // For usernameless flows, the challenge was saved with empty string
+    // For username flows, the challenge was saved with the provided username
+    const challengeKey = username !== undefined ? username : "";
+    const challenge = await this.storage.getAndDeleteChallenge(challengeKey);
     if (!challenge) {
       throw new Error("Challenge not found or expired");
     }
