@@ -198,7 +198,7 @@ Passkeys require WebAuthn support:
 
 This system is configured to work with modern **passkey** implementations and WebAuthn-compatible authenticators. In practice, this means users can:
 - Create a passkey on a device (e.g., Mac with Touch ID or an Android phone)
-- Use that passkey on other devices **within the same credential ecosystem** (e.g., Mac → iPhone via iCloud Keychain, Android phone → Chrome on another Android device or ChromeOS via Google Password Manager)
+- Use that passkey on other devices **within the same credential ecosystem** (e.g., Mac → iPhone via iCloud Keychain, Android phone → Chrome on another Android device or on ChromeOS via Google Password Manager)
 - Sync passkeys across supported devices via iCloud Keychain, Google Password Manager, or other credential managers that participate in the same ecosystem
 
 Note that passkeys generally **do not sync between different ecosystems** (for example, a passkey created in iCloud Keychain on a Mac cannot automatically be used on an unrelated Android device that only uses Google Password Manager). For true cross-platform use across ecosystems, users can instead use **cross-platform authenticators** such as compatible hardware security keys.
